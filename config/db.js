@@ -1,12 +1,8 @@
 const { Client} =require('pg');
+const config=require('./dbConfig.json')
 
-const con = new Client({
-    host: 'localhost',
-    user: 'postgres',
-    port: 5432,
-    password: 'tilak',
-    database: "AmoreTest"
-});
+
+const con = new Client(config);
 
 con.connect()
     .then(() => console.log("Database Connected"))
