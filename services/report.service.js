@@ -2,7 +2,7 @@ const reportRepository=require('../repository/report.repository')
 const logger=require('../logger/logger');
 class ReportService{
     async createReport(reportData){
-        const { reported_userid, reporter_userid, reason } = reportData;
+        const { reported_userid, reporter_userid, reason,description } = reportData;
         const validReasons = [
                 'Inappropriate Messages',
                 'Fake Profile',
@@ -14,6 +14,10 @@ class ReportService{
                 'Other'
             ];
             logger.info("Starting report creation");
+            if (!reason) {
+                logger.warn("Missing field required ",reason)
+                throw new Error('Missing required field:reason');
+            }
             if (!validReasons.includes(reason)) {
                 logger.warn(`Invalid reason. Valid reasons are: ${validReasons.join(', ')}`)
                 throw new Error(`Invalid reason. Valid reasons are: ${validReasons.join(', ')}`);
@@ -22,10 +26,7 @@ class ReportService{
                 logger.warn('Description too long',{data:description.length})
                 throw new Error('Description cannot exceed 1000 characters');
             }
-        if (!reason) {
-            logger.warn("Missing field required ",reason)
-            throw new Error('Missing required field:reason');
-        }
+       
         const report={
             reported_userid,
             reporter_userid,
@@ -34,8 +35,9 @@ class ReportService{
             status: 'Under Review', // Default status
             moderator_notes: null
         }
-        loggerinfo("Creating report in DB");
+        logger.info("Creating report in DB");
        const result= await reportRepository.createReport(report);
+       //unmatch automatically
        logger.info('Report successfully created',{
         data:result});
        return result;
@@ -61,10 +63,7 @@ class ReportService{
        const report=  await reportRepository.getReportById(reportId);
         if(!report.rows || report.rows.length==0){
                    logger.warn("Report not found ",{data:reportId});            
-                   return res.status(404).json({
-                       message:'Report not found',
-                       success:false
-                   })
+                   return null;
                }
        return report;
         }catch(error){
@@ -94,7 +93,7 @@ class ReportService{
             throw new Error("Moderator notes cannot exceed 1000 characters")
         }
         const updatedReport=await reportRepository.updateReportStatus(reportId,status,moderatorNotes);
-        if(!updatedResult){
+        if(!updatedReport){
             logger.warn('Failed to update report status,Please try again')
             throw new Error('Failed to update report status,Please try again')
         }

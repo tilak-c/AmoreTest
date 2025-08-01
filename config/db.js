@@ -1,5 +1,5 @@
 const { Client} =require('pg');
-const config=require('./dbConfig.json')
+const config=require('./config')
 
 
 const con = new Client(config);
