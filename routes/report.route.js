@@ -9,7 +9,7 @@ reportRouter.post('/postReport',reportController.createReport.bind(reportControl
 
 reportRouter.get('/api/admin/reports/:id',reportController.getReportById.bind(reportController))
 
-reportRouter.put('/api/admin/reports/updateReport/:id',reportController.updateReportStatus.bind(reportController));
+reportRouter.put('/api/admin/reports/:id',reportController.updateReportStatus.bind(reportController));
 
 
 module.exports=reportRouter;
