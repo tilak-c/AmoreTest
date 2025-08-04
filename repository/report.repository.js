@@ -19,9 +19,9 @@ class ReportRepository{
         return result;
     }
     async updateReportStatus(reportId,status,moderatorNotes){
-        const query = `update "reports" set status=$2,moderator_notes=$3 where report_id = $1`
+        const query = `update "reports" set status=$2,moderator_notes=$3 where report_id = $1 returning *`
         const result=await con.query(query,[reportId,status,moderatorNotes]);
-        return result;
+        return result.rows[0];
     }
     
 }
