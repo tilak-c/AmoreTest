@@ -67,7 +67,11 @@ class ReportService{
                }
        return report;
         }catch(error){
-            logger.error('Failed to get report by id, please try again')
+             logger.error('Failed to get report by id, please try again', {
+            error: error.message,
+            stack: error.stack,
+            reportId
+        });
             throw new Error('Failed to get report by id, please try again')
         }
     }

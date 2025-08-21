@@ -1,10 +1,10 @@
-const { Client} =require('pg');
+const { pool } =require('pg');
 const config=require('./config')
+const logger=require('../logger/logger')
 
-
-const con = new Client(config);
+const con = new pool(config);
 
 con.connect()
-    .then(() => console.log("Database Connected"))
-    .catch(err => console.error("Connection Error", err));
+    .then(() => logger.info("Database Connected"))
+    .catch(err => logger.error("Connection Error", err));
 module.exports={con};

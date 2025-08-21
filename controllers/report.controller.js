@@ -43,6 +43,13 @@ class ReportController{
         const reportId=req.params.id
         logger.info('Getting report by report ID')
         const report = await reportService.getReportById(reportId);
+         if (!report || !report.rows || report.rows.length === 0) {
+            logger.warn('No report found for the given ID', { reportId });
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Report not found' 
+            });
+        }
         logger.info('Succesfully fetched the report by reportID')
         res.json(report.rows[0]);
         }
