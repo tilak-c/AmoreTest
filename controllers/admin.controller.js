@@ -4,12 +4,12 @@ const logger=require('../logger/logger')
 class AdminController{
     async banUser(req,res){
         try {
-            const { userId, email, phone, reason } = req.body;
-            if (!userId || !email) {
+            const { user_id, email, phone, reason } = req.body;
+            if (!user_id || !email) {
                 return res.status(400).json({ message: "userId and email are required", success: false });
             }
 
-            const bannedUser = await adminService.banUser({ userId, email, phone, reason });
+            const bannedUser = await adminService.banUser({ user_id, email, phone, reason });
             res.status(201).json({ 
                 message: "User banned successfully", 
                 data: bannedUser 

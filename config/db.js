@@ -1,8 +1,8 @@
-const { pool } =require('pg');
+const { Pool } =require('pg');
 const config=require('./config')
 const logger=require('../logger/logger')
 
-const con = new pool(config);
+const con = new Pool(config);
 
 con.connect()
     .then(() => logger.info("Database Connected"))

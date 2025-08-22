@@ -1,31 +1,54 @@
-const {con}=require('../config/db')
+const { con } = require('../config/db');
+const logger = require('../logger/logger');
 
-class AdminRepository{
-    async banUser(userData){
-        const {userId,email,phone,reason}=userData;
-        const query=`insert into "banned_users" 
-        (user_id,email,phone,reason) values ($1,$2,$3,$4)`
-        const result=await con.query(query,[userId,email,phone,reason]);
-        return result;
-    }
-    async isUserAlreadyBanned(userId) {
+class AdminRepository {
+    async banUser(userData) {
+        const { user_id, email, phone, reason } = userData;
         const query = `
-            select * FROM "banned_users" 
-            where user_id = $1 AND is_active = TRUE
+            INSERT INTO "banned_users" (user_id, email, phone, reason)
+            VALUES ($1, $2, $3, $4)
         `;
-        return await con.query(query, [userId]);
+        try {
+            const result = await con.query(query, [user_id, email, phone, reason]);
+            return result;
+        } catch (err) {
+            logger.error(`Error banning user (ID: ${user_id}): ${err.message}`);
+            throw err;
+        }
     }
 
-    async getBannedUsers(){
-        const query=`select * from "banned_users"`;
-        const result=await con.query(query);
-        return result;
+    async isUserAlreadyBanned(user_id) {
+        const query = `
+            SELECT * FROM "banned_users"
+            WHERE user_id = $1 AND is_active = TRUE
+        `;
+        try {
+            return await con.query(query, [user_id]);
+        } catch (err) {
+            logger.error(`Error checking ban status for user (ID: ${user_id}): ${err.message}`);
+            throw err;
+        }
     }
-    async getBannedUserById(userId){
-        const query=`select * from banned_users where "user_id"=$1`
-        const result=await con.query(query,[userId]);
-        return result;
+
+    async getBannedUsers() {
+        const query = `SELECT * FROM "banned_users"`;
+        try {
+            return await con.query(query);
+        } catch (err) {
+            logger.error(`Error fetching banned users: ${err.message}`);
+            throw err;
+        }
+    }
+
+    async getBannedUserById(userId) {
+        const query = `SELECT * FROM "banned_users" WHERE user_id = $1`;
+        try {
+            return await con.query(query, [userId]);
+        } catch (err) {
+            logger.error(`Error fetching banned user by ID (${userId}): ${err.message}`);
+            throw err;
+        }
     }
 }
 
-module.exports=new AdminRepository();
+module.exports = new AdminRepository();
