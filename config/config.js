@@ -1,0 +1,8 @@
+module.exports=
+{
+  "host": "localhost",
+  "user": "postgres",
+  "port":5432,
+  "password": "tilak",
+  "database": "AmoreTest"
+}
