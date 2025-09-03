@@ -8,7 +8,15 @@ class AdminController{
             if (!user_id || !email) {
                 return res.status(400).json({ message: "userId and email are required", success: false });
             }
-
+            if(!phone){
+                 return res.status(400).json({ message: "Phone is required", success: false });
+            }
+            if(phone.length!=10){
+                 return res.status(400).json({ message: "Phone length must be 10", success: false });
+            }
+            // if(!reason){
+            //     return res.status(400).json({ message: "Reason must be provided", success: false });
+            // }
             const bannedUser = await adminService.banUser({ user_id, email, phone, reason });
             res.status(201).json({ 
                 message: "User banned successfully", 

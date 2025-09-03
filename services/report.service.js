@@ -2,6 +2,7 @@ const reportRepository=require('../repository/report.repository')
 const logger=require('../logger/logger');
 class ReportService{
     async createReport(reportData){
+         logger.info("Starting report creation");
         const { reported_userid, reporter_userid, reason,description } = reportData;
         const validReasons = [
                 'Inappropriate Messages',
@@ -13,7 +14,14 @@ class ReportService{
                 'Underage',
                 'Other'
             ];
-            logger.info("Starting report creation");
+            if (!reported_userid ) {
+                 logger.warn("Invalid reported_userid ",reason)
+                  throw new Error('Invalid reported_userid');
+             }
+             if (!reporter_userid ) {
+                 logger.warn("Invalid reporter_userid",reason)
+                     throw new Error('Invalid reporter_userid');
+                }
             if (!reason) {
                 logger.warn("Missing field required ",reason)
                 throw new Error('Missing required field:reason');
@@ -26,7 +34,7 @@ class ReportService{
                 logger.warn('Description too long',{data:description.length})
                 throw new Error('Description cannot exceed 1000 characters');
             }
-       
+
         const report={
             reported_userid,
             reporter_userid,
@@ -35,7 +43,7 @@ class ReportService{
             status: 'Under Review', // Default status
             moderator_notes: null
         }
-        logger.info("Creating report in DB");
+        logger.info("Validation passed,Creating report in DB");
        const result= await reportRepository.createReport(report);
        //unmatch automatically
        logger.info('Report successfully created',{

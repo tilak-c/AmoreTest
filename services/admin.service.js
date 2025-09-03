@@ -4,13 +4,17 @@ const logger=require('../logger/logger')
 class AdminService{
     async banUser(userData){
         try {
+            if (!userData || !userData.user_id) {
+                logger.warn("Invalid userData: Missing user_id", { userData });
+                throw new Error("Invalid input: user_id is required");
+             }
             logger.info(`Checking if user ${userData.user_id} is already banned`);
             const existingBan = await adminRepository.isUserAlreadyBanned(userData.user_id);
             if (existingBan.rows.length > 0) {
                 logger.warn("User is already banned", { userId: userData.user_id });
                 throw new Error("User is already banned");
             }
-
+            
             logger.info(`Banning user: ${userData.user_id}`);
             const bannedUser = await adminRepository.banUser(userData);
             return bannedUser;
@@ -38,6 +42,10 @@ class AdminService{
 
     async getBannedUserById(user_id){
         try{
+             if(!user_id){
+            logger.warn("Invalid user ID provided", { data: user_id });
+            throw new Error('Invalid user ID');
+        }
        const report=  await adminRepository.getBannedUserById(user_id);
         if(!report.rows || report.rows.length==0){
                    logger.warn("Banned user not found ",{data:user_id});            
